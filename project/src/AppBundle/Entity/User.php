@@ -9,7 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 /**
  * User
  * @ORM\Entity
- * @ORM\Table(name="user")
+ * @ORM\Table(name="User")
  * @ORM\HasLifecycleCallbacks()
  */
 class User extends BaseUser
@@ -24,7 +24,7 @@ class User extends BaseUser
     protected $id;
 
     /**
-     * @ORM\OneToMany(targetEntity="Task", mappedBy="User")
+     * @ORM\OneToMany(targetEntity="Task", mappedBy="user")
      */
 
     private $tasks;

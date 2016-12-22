@@ -1,26 +1,48 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8" />
-        <title>{% block title %}Task Planner{% endblock %}</title>
-        {% block stylesheets %}{% endblock %}
-        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
-    </head>
-    <body>
-        {% block body %}
+<head>
+    <meta charset="UTF-8"/>
+    <title>{% block title %}Task Planner{% endblock %}</title>
+    {% block stylesheets %}{% endblock %}
+    {% block javascripts %}
+        <script src="{{ asset('bundles/framework/js/jquery-3.1.1.min.js') }}" type="text/javascript"></script>
+        <script src="{{ asset('bundles/framework/js/bootstrap.js') }}" type="text/javascript"></script>
+        {#<script src="{{ asset('bundles/framework/js/app.js') }}" type="text/javascript"></script>#}
+    {% endblock %}
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}"/>
+</head>
+<body>
+{% block body %}
 
-            <input id="taskInput" placeholder="Place your task here"><br>
-            <input id="priority" placeholder="Priority 1-10"><br>
-            <button id="addTaskButton">Add task</button>
-        Tasks to finish: <span id="counter"></span>
+    {#<input id="taskInput" placeholder="Place your task here" name="taskName"><br>#}
+    {#<input id="priority" placeholder="Priority 1-10" name="priority"><br>#}
+    {#<button id="addTaskButton" class="btn btn-primary">Add task</button>#}
+    {#Tasks to finish: <span id="counter"></span>#}
 
 
-        <ul id="taskList">
-        </ul>
+    {#<ul id="taskList">#}
+    {#</ul>#}
 
-            <button id="removeFinishedTasksButton">Remove finished tasks</button>
+    {#<button id="removeFinishedTasksButton">Remove finished tasks</button>#}
 
-        {% endblock %}
-        {% block javascripts %}<script src="../../../../web/bundles/framework/js/app.js" type="text/javascript"></script>{% endblock %}
-    </body>
+    {{ form_start(form) }}
+    {{ form_label(form.name) }} <br>
+    {{ form_widget(form.name) }} <br>
+    {{ form_label(form.description) }} <br>
+    {{ form_widget(form.description) }} <br>
+    {{ form_label(form.term) }}
+    {{ form_widget(form.term) }}
+    {{ form_label(form.priority) }}<br>
+    {{ form_widget(form.priority) }}<br>
+    {{ form_label(form.category) }} <br>
+    {{ form_widget(form.category) }}<br>
+    {{ form_end(form) }}
+
+
+
+    <div class="col-md-10"><a href="/login">Login</a><br><a href="register">register</a></div>
+
+{% endblock %}
+
+</body>
 </html>

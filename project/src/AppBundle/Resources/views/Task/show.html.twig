@@ -13,23 +13,20 @@
 </head>
 <body>
 {% block body %}
+{% if task %} <table>
+    <h3>New task added!</h3>
+    <tr><th><label> Name:</th>
+    <td>{{ task.name }}</td></label></tr>
+    <tr><th><label> Description:</th><td> {{ task.description }}</td></label></tr><br>
+    <tr><th><label> Priority: </th><td>{{ task.priority }}</td></label></tr><br>
+    <tr><th><label> Category: </th><td>{{ task.category }}</td></label></tr><br>
+    <tr><th><label> Term: </th><td>{{ task.term | date }}</td></label></tr>
+</table>
+    {% else %}
+    <h3>Error with adding task</h3>
+    {% endif %}
 
-    {#<input id="taskInput" placeholder="Place your task here" name="taskName"><br>#}
-    {#<input id="priority" placeholder="Priority 1-10" name="priority"><br>#}
-    {#<button id="addTaskButton" class="btn btn-primary">Add task</button>#}
-    {#Tasks to finish: <span id="counter"></span>#}
-
-
-    {#<ul id="taskList">#}
-    {#</ul>#}
-
-    {#<button id="removeFinishedTasksButton">Remove finished tasks</button>#}
-
-    {{ form_start(form) }}
-
-    {{ form_widget(form) }}
-
-    {{ form_end(form) }}
+<br><br>
 
     <div class="col-md-10"><a href="/login">Login</a><br><a href="register">register</a></div>
 
