@@ -49,19 +49,19 @@ class Task
      */
     private $priority;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="category", type="string", length=255)
-     */
-    private $category;
 
     /**
      * @ORM\ManyToOne(targetEntity="User", inversedBy="tasks")
-     * @ORM\JoinColumn(name="User", referencedColumnName="id")
+     * @ORM\JoinColumn(name="user", referencedColumnName="id")
      */
 
     private $user;
+
+    /**
+     *
+     */
+
+    private $category;
 
     /**
      * Get id

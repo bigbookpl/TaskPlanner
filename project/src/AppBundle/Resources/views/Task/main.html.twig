@@ -6,10 +6,10 @@
     <title>{% block title %}Task Planner{% endblock %}</title>
     {% include 'base.html.twig' %}
     {% block stylesheets %}
-        {% endblock %}
+    {% endblock %}
     {% block javascripts %}
     {% endblock %}
-    <script src="{{ asset('bundles/framework/js/comments.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('bundles/framework/js/main.js') }}" type="text/javascript"></script>
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}"/>
 </head>
 <body>
@@ -26,7 +26,7 @@
         {#</ul>#}
 
         {#<button id="removeFinishedTasksButton">Remove finished tasks</button>#}
-<div class="col-md-2">
+        <div class="col-md-2">
             {{ form_start(form) }}
             {{ form_label(form.name) }} <br>
             {{ form_widget(form.name) }} <br>
@@ -40,47 +40,59 @@
             {{ form_widget(form.category) }}<br>
             {{ form_end(form) }}
 
-</div>
+        </div>
         <div class="col-md-4">
             {% for task in tasks %}
-             <table>  <tr>
-                    <th><label> Name:</th>
-                    <td>{{ task.name }}</td>
-                    </label></tr>
-                <tr>
-                    <th><label> Description:</th>
-                    <td> {{ task.description }}</td>
-                    </label></tr>
-                <br>
-                <tr>
-                    <th><label> Priority:</th>
-                    <td>{{ task.priority }}</td>
-                    </label></tr>
-                <br>
-                <tr>
-                    <th><label> Category:</th>
-                    <td>{{ task.category }}</td>
-                    </label></tr>
-                <br>
-                <tr>
-                    <th><label> Term:</th>
-                    <td>{{ task.term | date }}</td>
-                    </label></tr>
-                 <tr><td><a class="showComm">Show comments ({{ comments | length }})</a></td></tr>
-             </table>
+                <table id="{{ task.id }}">
+
+                    <tr>
+                        <th><label> Name:</label></th>
+                        <td>{{ task.name }}</td>
+                    </tr>
+                    <tr>
+                        <th><label> Description:</label></th>
+                        <td> {{ task.description }}</td>
+                    </tr>
+                    <br>
+                    <tr>
+                        <th><label> Priority:</label></th>
+                        <td>{{ task.priority }}</td>
+                    </tr>
+                    <br>
+                    <tr>
+                        <th><label> Category:</label></th>
+                        <td>{{ task.category }}</td>
+                    </tr>
+                    <br>
+                    <tr>
+                        <th><label> Term:</label></th>
+                        <td>{{ task.term | date }}</td>
+                    </tr>
+                    <tr>
+                        <td><a class="showComm">Show comments ({{ comments | length }})</a></td>
+                    </tr>
+                </table>
                 <div class="comments">
-                {% for comment in comments %}
-                    <table><tr><th> {{ comment.date | date }}</th></tr>
-                    <tr><td>{{ comment.text }}</td></tr></table>
+                    {% for comment in comments %}
+                        <table>
+                            <tr>
+                                <th> {{ comment.date | date }}</th>
+                            </tr>
+                            <tr>
+                                <td>{{ comment.text }}</td>
+                            </tr>
+                        </table>
                     {% endfor %}
                 </div>
-                    {{ form_start(commForm) }}
-                    {{ form_widget(commForm) }}
-                    {{ form_end(commForm) }}
+                {{ form_start(commForm) }}
+                {{ form_widget(commForm) }}
+                {{ form_end(commForm) }}
 
             {% endfor %}
         </div>
-        <div class="col-md-2"><a href="/login">Login</a><br><a href="register">Register</a><br><a href="/admin">Admin panel</a></div>
+        <div class="col-md-1"> <img id="done" src="/doneS.png"><img id="del" src="/trashS.png"><img id="edit" src="/editS.png"></div>
+        <div class="col-md-2"><a href="/login">Login</a><br><a href="register">Register</a><br><a href="/admin">Admin
+                panel</a></div>
 
         {% endblock %}
     </div>
