@@ -9,7 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 /**
  * User
  * @ORM\Entity
- * @ORM\Table(name="user")
+ * @ORM\Table(name="User")
  * @ORM\HasLifecycleCallbacks()
  */
 class User extends BaseUser
@@ -28,6 +28,13 @@ class User extends BaseUser
      */
 
     private $tasks;
+
+
+    /**
+     * @ORM\OneToMany(targetEntity="Category", mappedBy="user")
+     */
+
+    private $categories;
 
     public function __construct()
     {

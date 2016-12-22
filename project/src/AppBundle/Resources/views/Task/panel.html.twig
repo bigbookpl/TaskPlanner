@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <title>{% block title %}Task Planner{% endblock %}</title>
+    {% block stylesheets %}{% endblock %}
+    {% block javascripts %}
+        {% include 'base.html.twig' %}
+    {% endblock %}
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}"/>
+</head>
+<body>
+{% block body %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-3">
+            <label>Add new category: </label>
+                {{ form_start(form) }}
+                {{ form_widget(form.name) }} <br>
+                {{ form_errors(form.name) }}<br>
+                {{ form_end(form) }}
+                <p>{{ alert }}</p>
+            </div>
+
+
+        </div>
+        <br><br>
+
+        <div class="col-md-1"><a href="/login">Login</a><br><a href="register">register</a></div>
+    </div>
+    </div>
+{% endblock %}
+
+</body>
+</html>

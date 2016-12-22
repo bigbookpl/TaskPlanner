@@ -2,47 +2,76 @@
 <html>
 <head>
     <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Task Planner{% endblock %}</title>
-    {% block stylesheets %}{% endblock %}
+    {% include 'base.html.twig' %}
+    {% block stylesheets %}
+        {% endblock %}
     {% block javascripts %}
-        <script src="{{ asset('bundles/framework/js/jquery-3.1.1.min.js') }}" type="text/javascript"></script>
-        <script src="{{ asset('bundles/framework/js/bootstrap.js') }}" type="text/javascript"></script>
-        {#<script src="{{ asset('bundles/framework/js/app.js') }}" type="text/javascript"></script>#}
     {% endblock %}
+
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}"/>
 </head>
 <body>
 {% block body %}
-
-    {#<input id="taskInput" placeholder="Place your task here" name="taskName"><br>#}
-    {#<input id="priority" placeholder="Priority 1-10" name="priority"><br>#}
-    {#<button id="addTaskButton" class="btn btn-primary">Add task</button>#}
-    {#Tasks to finish: <span id="counter"></span>#}
-
-
-    {#<ul id="taskList">#}
-    {#</ul>#}
-
-    {#<button id="removeFinishedTasksButton">Remove finished tasks</button>#}
-
-    {{ form_start(form) }}
-    {{ form_label(form.name) }} <br>
-    {{ form_widget(form.name) }} <br>
-    {{ form_label(form.description) }} <br>
-    {{ form_widget(form.description) }} <br>
-    {{ form_label(form.term) }}
-    {{ form_widget(form.term) }}
-    {{ form_label(form.priority) }}<br>
-    {{ form_widget(form.priority) }}<br>
-    {{ form_label(form.category) }} <br>
-    {{ form_widget(form.category) }}<br>
-    {{ form_end(form) }}
+<div class="container-fluid">
+    <div class="row">
+        {#<input id="taskInput" placeholder="Place your task here" name="taskName"><br>#}
+        {#<input id="priority" placeholder="Priority 1-10" name="priority"><br>#}
+        {#<button id="addTaskButton" class="btn btn-primary">Add task</button>#}
+        {#Tasks to finish: <span id="counter"></span>#}
 
 
+        {#<ul id="taskList">#}
+        {#</ul>#}
 
-    <div class="col-md-10"><a href="/login">Login</a><br><a href="register">register</a></div>
+        {#<button id="removeFinishedTasksButton">Remove finished tasks</button>#}
+<div class="col-md-2">
+            {{ form_start(form) }}
+            {{ form_label(form.name) }} <br>
+            {{ form_widget(form.name) }} <br>
+            {{ form_label(form.description) }} <br>
+            {{ form_widget(form.description) }} <br>
+            {{ form_label(form.term) }}
+            {{ form_widget(form.term) }}
+            {{ form_label(form.priority) }}<br>
+            {{ form_widget(form.priority) }}<br>
+            {{ form_label(form.category) }} <br>
+            {{ form_widget(form.category) }}<br>
+            {{ form_end(form) }}
 
-{% endblock %}
+</div>
+        <div class="col-md-4">
+            {% for task in tasks %}
+                <tr>
+                    <th><label> Name:</th>
+                    <td>{{ task.name }}</td>
+                    </label></tr>
+                <tr>
+                    <th><label> Description:</th>
+                    <td> {{ task.description }}</td>
+                    </label></tr>
+                <br>
+                <tr>
+                    <th><label> Priority:</th>
+                    <td>{{ task.priority }}</td>
+                    </label></tr>
+                <br>
+                <tr>
+                    <th><label> Category:</th>
+                    <td>{{ task.category }}</td>
+                    </label></tr>
+                <br>
+                <tr>
+                    <th><label> Term:</th>
+                    <td>{{ task.term | date }}</td>
+                    </label></tr>
+            {% endfor %}
+        </div>
+        <div class="col-md-2"><a href="/login">Login</a><br><a href="register">Register</a><br><a href="/admin">Admin panel</a></div>
 
+        {% endblock %}
+    </div>
+</div>
 </body>
 </html>
