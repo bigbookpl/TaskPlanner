@@ -5,12 +5,12 @@ namespace AppBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Category
+ * Comment
  *
- * @ORM\Table(name="Category")
- * @ORM\Entity(repositoryClass="AppBundle\Repository\CategoryRepository")
+ * @ORM\Table(name="Comment")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\CommentRepository")
  */
-class Category
+class Comment
 {
     /**
      * @var int
@@ -24,16 +24,21 @@ class Category
     /**
      * @var string
      *
-     * @ORM\Column(name="name", type="string", length=255)
+     * @ORM\Column(name="text", type="text")
      */
-    private $name;
+    private $text;
 
     /**
-     * @ORM\ManyToOne(targetEntity="User", inversedBy="categories")
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="comments")
      * @ORM\JoinColumn(name="User", referencedColumnName="id")
      */
 
     private $user;
+    /**
+     * @var datetime
+     * @ORM\Column(name="date", type="datetime")
+     */
+    private $date;
 
     /**
      * Get id
@@ -46,27 +51,27 @@ class Category
     }
 
     /**
-     * Set name
+     * Set text
      *
-     * @param string $name
+     * @param string $text
      *
-     * @return Category
+     * @return Comment
      */
-    public function setName($name)
+    public function setText($text)
     {
-        $this->name = $name;
+        $this->text = $text;
 
         return $this;
     }
 
     /**
-     * Get name
+     * Get text
      *
      * @return string
      */
-    public function getName()
+    public function getText()
     {
-        return $this->name;
+        return $this->text;
     }
 
     /**
@@ -74,7 +79,7 @@ class Category
      *
      * @param \AppBundle\Entity\User $user
      *
-     * @return Category
+     * @return Comment
      */
     public function setUser(\AppBundle\Entity\User $user = null)
     {

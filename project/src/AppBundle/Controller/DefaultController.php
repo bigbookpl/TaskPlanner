@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\Comment;
 use AppBundle\Entity\Task;
 use AppBundle\Entity\Category;
 use Doctrine\ORM\EntityRepository;
@@ -9,6 +10,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Validator\Constraints\DateTime;
 
 class DefaultController extends Controller
 {
@@ -34,9 +36,11 @@ class DefaultController extends Controller
             ->add('term', 'datetime')
             ->add('priority', 'number')
             ->add('category', 'entity', ['class' => 'AppBundle:Category', 'choice_label' => 'name', 'query_builder' =>
-                function(EntityRepository $er) {return $er->createQueryBuilder('c')
-                    ->where('c.user = :user')
-                    ->setParameter('user', $this->getUser());}])
+                function (EntityRepository $er) {
+                    return $er->createQueryBuilder('c')
+                        ->where('c.user = :user')
+                        ->setParameter('user', $this->getUser());
+                }])
             ->add('Dodaj', 'submit')
             ->getForm();
         return $form;
@@ -48,12 +52,30 @@ class DefaultController extends Controller
      * @Template("AppBundle:Task:main.html.twig")
      */
 
-    public function mainAction()
+    public function mainAction(Request $req)
     {
-        $em = $this->getDoctrine()->getRepository('AppBundle:Task');
-        $tasks = $em->findByUser($this->getUser());
+        $repoTask = $this->getDoctrine()->getRepository('AppBundle:Task');
+        $tasks = $repoTask->findByUser($this->getUser());
+        $repoComm = $this->getDoctrine()->getRepository('AppBundle:Comment');
+        $comments = $repoComm->findByUser($this->getUser(), ['date' => 'DESC']);
         $form = $this->createFormT();
-        return ['form' => $form->createView(), 'tasks' => $tasks];
+        $comment = new Comment();
+        $commForm = $this->createFormBuilder($comment)
+            ->setAction('#')
+            ->add('text', 'textarea')
+            ->add('Comment', 'submit')
+            ->getForm();
+        $commForm->handleRequest($req);
+        if ($commForm->isSubmitted()) {
+            $comment = $commForm->getData();
+            $comment->setUser($this->getUser());
+            $comment->setDate(new \DateTime());
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($comment);
+            $em->flush();
+        }
+
+        return ['form' => $form->createView(), 'tasks' => $tasks, 'comments' => $comments, 'commForm' => $commForm->createView()];
 
     }
 
