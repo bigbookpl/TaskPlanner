@@ -34,6 +34,14 @@ class Comment
      */
 
     private $user;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Task", inversedBy="comments")
+     * @ORM\JoinColumn(name="task_id", referencedColumnName="id")
+     */
+
+    private $task;
+
     /**
      * @var datetime
      * @ORM\Column(name="date", type="datetime")

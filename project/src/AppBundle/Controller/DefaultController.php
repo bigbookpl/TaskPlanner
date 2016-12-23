@@ -8,21 +8,47 @@ use AppBundle\Entity\Category;
 use Doctrine\ORM\EntityRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints\DateTime;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 
 class DefaultController extends Controller
 {
     /**
-     * @Route("/", name="homepage")
+     * @Route("/add_comment/{taskId}", name="add_comment")
      */
-    public function indexAction(Request $request)
-    {
-        // replace this example code with whatever you need
-        return $this->render('default/index.html.twig', array(
-            'base_dir' => realpath($this->container->getParameter('kernel.root_dir') . '/..') . DIRECTORY_SEPARATOR,
-        ));
+    public function addCommentAction (Request $req, $taskId) {
+        $comment = new Comment();
+        $commForm = $this->createFormBuilder($comment)
+            ->setAction("/add_comment/{$taskId}")
+            ->add('text', TextareaType::class)
+            ->add('Comment', SubmitType::class)
+            ->getForm();
+
+        $commForm->handleRequest($req);
+        if ($commForm->isSubmitted()) {
+            $comment = $commForm->getData();
+            $comment->setUser($this->getUser());
+            $comment->setDate(new \DateTime());
+            $comment->setTask($this->getDoctrine()->getRepository('AppBundle:Task')->find($taskId));
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($comment);
+            $em->flush();
+            return $this->redirect("/#" . $taskId);
+        }
+
+        return $this->render(
+            'AppBundle:Task:addComment.html.twig',
+            array('commForm' => $commForm->createView())
+        );
     }
 
 
@@ -31,11 +57,11 @@ class DefaultController extends Controller
         $task = new Task();
         $form = $this->createFormBuilder($task)
             ->setAction($this->generateurl('added'))
-            ->add('name', 'text')
-            ->add('description', 'textarea')
-            ->add('term', 'datetime')
-            ->add('priority', 'number')
-            ->add('category', 'entity', ['class' => 'AppBundle:Category', 'choice_label' => 'name', 'query_builder' =>
+            ->add('name', TextType::class)
+            ->add('description', TextareaType::class)
+            ->add('term', DateTimeType::class)
+            ->add('priority', NumberType::class)
+            ->add('category', EntityType::class, ['class' => 'AppBundle:Category', 'choice_label' => 'name', 'query_builder' =>
                 function (EntityRepository $er) {
                     return $er->createQueryBuilder('c')
                         ->where('c.user = :user')
@@ -46,9 +72,8 @@ class DefaultController extends Controller
         return $form;
     }
 
-
     /**
-     * @Route("/main", name="main")
+     * @Route("/", name="main")
      * @Template("AppBundle:Task:main.html.twig")
      */
 
@@ -59,23 +84,7 @@ class DefaultController extends Controller
         $repoComm = $this->getDoctrine()->getRepository('AppBundle:Comment');
         $comments = $repoComm->findByUser($this->getUser(), ['date' => 'DESC']);
         $form = $this->createFormT();
-        $comment = new Comment();
-        $commForm = $this->createFormBuilder($comment)
-            ->setAction('#')
-            ->add('text', 'textarea')
-            ->add('Comment', 'submit')
-            ->getForm();
-        $commForm->handleRequest($req);
-        if ($commForm->isSubmitted()) {
-            $comment = $commForm->getData();
-            $comment->setUser($this->getUser());
-            $comment->setDate(new \DateTime());
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($comment);
-            $em->flush();
-        }
-
-        return ['form' => $form->createView(), 'tasks' => $tasks, 'comments' => $comments, 'commForm' => $commForm->createView()];
+        return ['form' => $form->createView(), 'tasks' => $tasks, 'comments' => $comments];
 
     }
 
@@ -113,8 +122,8 @@ class DefaultController extends Controller
         $alert = "";
         $form = $this->createFormBuilder($category)
             ->setAction('#')
-            ->add('name', 'text')
-            ->add('Add', 'submit')
+            ->add('name', TextType::class)
+            ->add('Add', SubmitType::class)
             ->getForm();
         $form->handleRequest($req);
         if ($form->isSubmitted()) {
@@ -128,4 +137,5 @@ class DefaultController extends Controller
 
         return ['alert' => $alert, 'form' => $form->createView()];
     }
+
 }

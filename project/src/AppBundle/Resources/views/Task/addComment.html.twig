@@ -1,0 +1,6 @@
+{{ form_start(commForm) }}
+                {#{{ form_label(commForm.text, null, {'label_attr' : {'class': task.id}}) }}#}
+                {{ form_widget(commForm.text) }}
+                {#{{ form_widget(commForm.task, {value : task}) }}#}
+                {{ form_errors(commForm) }}
+                {{ form_end(commForm) }}

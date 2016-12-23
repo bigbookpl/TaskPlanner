@@ -1,0 +1,12 @@
+{% for comment in comments %}
+    {% if comment.task.id == taskId %}
+        <table>
+            <tr>
+                <th> {{ comment.date | date }}</th>
+            </tr>
+            <tr>
+                <td>{{ comment.text }}</td>
+            </tr>
+        </table>
+    {% endif %}
+{% endfor %}

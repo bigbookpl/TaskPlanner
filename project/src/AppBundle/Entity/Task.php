@@ -58,7 +58,8 @@ class Task
     private $user;
 
     /**
-     *
+     * @ORM\ManyToOne(targetEntity="Category")
+     * @ORM\JoinColumn(name="category_id", referencedColumnName="id")
      */
 
     private $category;
@@ -68,6 +69,13 @@ class Task
      *
      * @return int
      */
+
+    /**
+     * @ORM\OneToMany(targetEntity="Comment", mappedBy="task")
+     */
+
+    private $comments;
+
     public function getId()
     {
         return $this->id;
@@ -216,4 +224,51 @@ class Task
     {
         return $this->user;
     }
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->comments = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add comment
+     *
+     * @param \AppBundle\Entity\Comment $comment
+     *
+     * @return Task
+     */
+    public function addComment(\AppBundle\Entity\Comment $comment)
+    {
+        $this->comments[] = $comment;
+
+        return $this;
+    }
+
+    /**
+     * Remove comment
+     *
+     * @param \AppBundle\Entity\Comment $comment
+     */
+    public function removeComment(\AppBundle\Entity\Comment $comment)
+    {
+        $this->comments->removeElement($comment);
+    }
+
+    /**
+     * Get comments
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getComments()
+    {
+        return $this->comments;
+    }
+
+//    public function __toString()
+//    {
+//        return $this->id;
+//    }
 }

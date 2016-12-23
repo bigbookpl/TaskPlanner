@@ -34,6 +34,14 @@ class Comment
      */
 
     private $user;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Task", inversedBy="comments")
+     * @ORM\JoinColumn(name="task_id", referencedColumnName="id")
+     */
+
+    private $task;
+
     /**
      * @var datetime
      * @ORM\Column(name="date", type="datetime")
@@ -120,5 +128,29 @@ class Comment
     public function getDate()
     {
         return $this->date;
+    }
+
+    /**
+     * Set task
+     *
+     * @param \AppBundle\Entity\Task $task
+     *
+     * @return Comment
+     */
+    public function setTask(\AppBundle\Entity\Task $task = null)
+    {
+        $this->task = $task;
+
+        return $this;
+    }
+
+    /**
+     * Get task
+     *
+     * @return \AppBundle\Entity\Task
+     */
+    public function getTask()
+    {
+        return $this->task;
     }
 }
