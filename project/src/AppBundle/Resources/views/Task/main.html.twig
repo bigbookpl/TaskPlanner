@@ -76,16 +76,22 @@
                             <td>{{ task.term | date }}</td>
                         </tr>
                         <tr>
-                            <td><a class="showComm">Show comments ({{ comments | length }})</a></td>
+                            <td><a class="showComm">Show comments (
+                                    {% if counters[task.id] is defined  %}
+                                        {{ counters [task.id]}}
+                                {% else %}
+                                   0
+                                {% endif %})</a></td>
                         </tr>
                     </table>
                     <div class="comments">
                         {% include 'AppBundle:Task:comments.html.twig' with {'comments': comments, 'taskId': task.id} %}
+                    </div>
                         {{ render(controller(
                         'AppBundle:Default:addComment',
                         { 'taskId': task.id }
                         )) }}
-                    </div>
+
 
 
                 </div>

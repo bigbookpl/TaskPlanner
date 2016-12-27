@@ -19,6 +19,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints\DateTime;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Symfony\Component\HttpFoundation\Response;
 
 class DefaultController extends Controller
 {
@@ -80,13 +81,22 @@ class DefaultController extends Controller
 
     public function mainAction(Request $req)
     {
-        $repoTask = $this->getDoctrine()->getRepository('AppBundle:Task');
-        $tasks = $repoTask->findByUser($this->getUser());
-        $repoComm = $this->getDoctrine()->getRepository('AppBundle:Comment');
-        $comments = $repoComm->findByUser($this->getUser(), ['date' => 'DESC']);
-        $form = $this->createFormT();
-        return ['form' => $form->createView(), 'tasks' => $tasks, 'comments' => $comments];
-
+        if ($this->getUser()) {
+            $repoTask = $this->getDoctrine()->getRepository('AppBundle:Task');
+            $tasks = $repoTask->findByUser($this->getUser());
+            $repoComm = $this->getDoctrine()->getRepository('AppBundle:Comment');
+            $comments = $repoComm->findByUser($this->getUser(), ['date' => 'DESC']);
+            $counters = [];
+            foreach ($comments as $comment) {
+                $currOffset = $comment->getTask()->getId();
+                if (!isset($counters[$currOffset])) {
+                    $counters[$currOffset] = 0;
+                }
+                $counters[$currOffset]++;
+            }
+            $form = $this->createFormT();
+            return ['form' => $form->createView(), 'tasks' => $tasks, 'comments' => $comments, 'counters' => $counters];
+        } else return $this->redirect("/login");
     }
 
 
@@ -140,13 +150,16 @@ class DefaultController extends Controller
     }
 
     /**
-     * @Route("/deleteTask/{taskId}")
+     * @Route("/deleteTask/{taskId}", name="delTask")
      */
     public function deleteTask($taskId)
     {
-        $user = $this->getUser();
-        $user->removeTask($this->getDoctrine()->getRepository('AppBundle:Task')->find($taskId));
-        return new Response();
+        $task = $this->getDoctrine()->getRepository('AppBundle:Task')->findOneById($taskId);
+        $task->setUser(NULL);
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($task);
+        $em->flush();
+        return new Response("<html><body><p>All good.</p></body></html>");
     }
 
 }

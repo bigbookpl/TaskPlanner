@@ -76,6 +76,9 @@ class Task
 
     private $comments;
 
+
+    private $isDone = false;
+
     public function getId()
     {
         return $this->id;
