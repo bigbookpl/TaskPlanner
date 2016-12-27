@@ -25,7 +25,8 @@ class DefaultController extends Controller
     /**
      * @Route("/add_comment/{taskId}", name="add_comment")
      */
-    public function addCommentAction (Request $req, $taskId) {
+    public function addCommentAction(Request $req, $taskId)
+    {
         $comment = new Comment();
         $commForm = $this->createFormBuilder($comment)
             ->setAction("/add_comment/{$taskId}")
@@ -136,6 +137,16 @@ class DefaultController extends Controller
         }
 
         return ['alert' => $alert, 'form' => $form->createView()];
+    }
+
+    /**
+     * @Route("/deleteTask/{taskId}")
+     */
+    public function deleteTask($taskId)
+    {
+        $user = $this->getUser();
+        $user->removeTask($this->getDoctrine()->getRepository('AppBundle:Task')->find($taskId));
+        return new Response();
     }
 
 }
