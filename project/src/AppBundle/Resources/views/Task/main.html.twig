@@ -34,16 +34,27 @@
             {{ form_end(form) }}
 
         </div>
-        <div class="col-md-8"></div>
+        <div class="col-md-8">
+
+            {#kalendarz/kółka#}
+
+        </div>
         <div class="col-md-2 navbar navbar-inverse" role="navigation">
             <a href="/login">Login</a><br>
-            <a href="register">Register</a><br>
-            <a href="/admin">Edit</a>
+            <a href="/register">Register</a><br>
+            <a href="/admin">Edit categories</a>
         </div>
 
     </div>
-
+    <div class="row">
+        <div class="col-md-4"></div>
+        <div class="col-md-8">
+            <label><input type="checkbox" id="doneFilter" checked="checked">Show only undone</label>
+        </div>
+    </div>
     {% for task in tasks %}
+        {% if task.isDone and doneFilter %}
+        {% else %}
         <div class="row">
             <div class="col-md-4"></div>
             <div class="tasks" id="{{ task.id }}">
@@ -76,6 +87,14 @@
                             <td>{{ task.term | date }}</td>
                         </tr>
                         <tr>
+                            <th><label> Done:</label></th>
+                            <td>{% if task.isDone %}
+                            Yes
+                            {% else %}
+                            No
+                            {% endif %}</td>
+                        </tr>
+                        <tr>
                             <td><a class="showComm">Show comments (
                                     {% if counters[task.id] is defined  %}
                                         {{ counters [task.id]}}
@@ -97,11 +116,11 @@
                 </div>
 
 
-                <div class="col-md-1 buttonsTP {{ task.id }}" data-content="{{ task.id }}"><img  class="doneBtn" src="/doneS.png"><img class="delBtn" src="/trashS.png"><img class="editBtn" src="/editS.png">
+                <div class="col-md-1 buttonsTP {{ task.id }}" data-content="{{ task.id }}"><a href="/setDone/{{ task.id }}"><img  class="doneBtn" src="/doneS.png"></a><img class="delBtn" src="/trashS.png"><img class="editBtn" src="/editS.png">
                 </div>
             </div>
         </div>
-
+    {% endif %}
     {% endfor %}
 
 

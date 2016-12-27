@@ -64,11 +64,6 @@ class Task
 
     private $category;
 
-    /**
-     * Get id
-     *
-     * @return int
-     */
 
     /**
      * @ORM\OneToMany(targetEntity="Comment", mappedBy="task")
@@ -76,8 +71,19 @@ class Task
 
     private $comments;
 
+    /**
+     * @var bool
+     *
+     * @ORM\Column(name="is_done", type="boolean")
+     */
 
     private $isDone = false;
+
+    /**
+     * Get id
+     *
+     * @return int
+     */
 
     public function getId()
     {
@@ -274,4 +280,30 @@ class Task
 //    {
 //        return $this->id;
 //    }
+
+
+
+    /**
+     * Set isDone
+     *
+     * @param boolean $isDone
+     *
+     * @return Task
+     */
+    public function setIsDone($isDone)
+    {
+        $this->isDone = $isDone;
+
+        return $this;
+    }
+
+    /**
+     * Get isDone
+     *
+     * @return boolean
+     */
+    public function getIsDone()
+    {
+        return $this->isDone;
+    }
 }

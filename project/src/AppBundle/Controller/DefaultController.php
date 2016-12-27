@@ -28,29 +28,31 @@ class DefaultController extends Controller
      */
     public function addCommentAction(Request $req, $taskId)
     {
-        $comment = new Comment();
-        $commForm = $this->createFormBuilder($comment)
-            ->setAction("/add_comment/{$taskId}")
-            ->add('text', TextareaType::class)
-            ->add('Comment', SubmitType::class)
-            ->getForm();
+        if ($this->getUser()) {
+            $comment = new Comment();
+            $commForm = $this->createFormBuilder($comment)
+                ->setAction("/add_comment/{$taskId}")
+                ->add('text', TextareaType::class)
+                ->add('Comment', SubmitType::class)
+                ->getForm();
 
-        $commForm->handleRequest($req);
-        if ($commForm->isSubmitted()) {
-            $comment = $commForm->getData();
-            $comment->setUser($this->getUser());
-            $comment->setDate(new \DateTime());
-            $comment->setTask($this->getDoctrine()->getRepository('AppBundle:Task')->find($taskId));
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($comment);
-            $em->flush();
-            return $this->redirect("/#" . $taskId);
-        }
+            $commForm->handleRequest($req);
+            if ($commForm->isSubmitted()) {
+                $comment = $commForm->getData();
+                $comment->setUser($this->getUser());
+                $comment->setDate(new \DateTime());
+                $comment->setTask($this->getDoctrine()->getRepository('AppBundle:Task')->find($taskId));
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($comment);
+                $em->flush();
+                return $this->redirect("/#" . $taskId);
+            }
 
-        return $this->render(
-            'AppBundle:Task:addComment.html.twig',
-            array('commForm' => $commForm->createView())
-        );
+            return $this->render(
+                'AppBundle:Task:addComment.html.twig',
+                array('commForm' => $commForm->createView())
+            );
+        } else return $this->redirect("/login");
     }
 
 
@@ -81,9 +83,14 @@ class DefaultController extends Controller
 
     public function mainAction(Request $req)
     {
+        $doneFilter = false;
         if ($this->getUser()) {
+            if ($req->getMethod() == 'POST') {
+                if ($req->get('doneFilterChecked'))
+                    $doneFilter = true;
+            }
             $repoTask = $this->getDoctrine()->getRepository('AppBundle:Task');
-            $tasks = $repoTask->findByUser($this->getUser());
+            $tasks = $repoTask->findByUser($this->getUser(), ['term' => 'DESC']);
             $repoComm = $this->getDoctrine()->getRepository('AppBundle:Comment');
             $comments = $repoComm->findByUser($this->getUser(), ['date' => 'DESC']);
             $counters = [];
@@ -95,7 +102,7 @@ class DefaultController extends Controller
                 $counters[$currOffset]++;
             }
             $form = $this->createFormT();
-            return ['form' => $form->createView(), 'tasks' => $tasks, 'comments' => $comments, 'counters' => $counters];
+            return ['form' => $form->createView(), 'tasks' => $tasks, 'comments' => $comments, 'counters' => $counters, 'doneFilter' => $doneFilter];
         } else return $this->redirect("/login");
     }
 
@@ -128,38 +135,59 @@ class DefaultController extends Controller
 
     public function adminAction(Request $req)
     {
-        $this->denyAccessUnlessGranted("ROLE_ADMIN");
-        $category = new Category();
-        $alert = "";
-        $form = $this->createFormBuilder($category)
-            ->setAction('#')
-            ->add('name', TextType::class)
-            ->add('Add', SubmitType::class)
-            ->getForm();
-        $form->handleRequest($req);
-        if ($form->isSubmitted()) {
-            $category = $form->getData();
-            $category->setUser($this->getUser());
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($category);
-            $em->flush();
-            $alert = "New category added.";
-        }
+        if ($this->getUser()) {
+            $category = new Category();
+            $alert = "";
+            $form = $this->createFormBuilder($category)
+                ->setAction('#')
+                ->add('name', TextType::class)
+                ->add('Add', SubmitType::class)
+                ->getForm();
+            $form->handleRequest($req);
+            if ($form->isSubmitted()) {
+                $category = $form->getData();
+                $category->setUser($this->getUser());
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($category);
+                $em->flush();
+                $alert = "New category added.";
+            }
 
-        return ['alert' => $alert, 'form' => $form->createView()];
+            return ['alert' => $alert, 'form' => $form->createView()];
+        } else return $this->redirect("/login");
     }
 
     /**
      * @Route("/deleteTask/{taskId}", name="delTask")
      */
-    public function deleteTask($taskId)
+    public function deleteTaskAction($taskId)
     {
-        $task = $this->getDoctrine()->getRepository('AppBundle:Task')->findOneById($taskId);
-        $task->setUser(NULL);
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($task);
-        $em->flush();
-        return new Response("<html><body><p>All good.</p></body></html>");
+        if ($this->getUser()) {
+            $task = $this->getDoctrine()->getRepository('AppBundle:Task')->findOneById($taskId);
+            $task->setUser(NULL);
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($task);
+            $em->flush();
+            return new Response("<html><body><p>All good.</p></body></html>");
+        } else return $this->redirect("/login");
     }
 
+    /**
+     * @Route("/setDone/{taskId}", name="setDone")
+     */
+
+    public function setDoneAction($taskId)
+    {
+        if ($this->getUser()) {
+            $task = $this->getDoctrine()->getRepository('AppBundle:Task')->findOneById($taskId);
+            if ($task->getIsDone())
+                $task->setIsDone(false);
+            else
+                $task->setIsDone(true);
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($task);
+            $em->flush();
+            return $this->redirect("/#" . $taskId);
+        } else return $this->redirect("/login");
+    }
 }
