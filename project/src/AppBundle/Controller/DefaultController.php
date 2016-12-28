@@ -86,8 +86,11 @@ class DefaultController extends Controller
         $doneFilter = false;
         if ($this->getUser()) {
             if ($req->getMethod() == 'POST') {
-                if ($req->get('doneFilterChecked'))
+                if ('on' == $req->get('doneFilterChecked'))
                     $doneFilter = true;
+            }
+            if ($req->getMethod() == 'GET') {
+                $edit = $req->get('edit');
             }
             $repoTask = $this->getDoctrine()->getRepository('AppBundle:Task');
             $tasks = $repoTask->findByUser($this->getUser(), ['term' => 'DESC']);
@@ -102,7 +105,7 @@ class DefaultController extends Controller
                 $counters[$currOffset]++;
             }
             $form = $this->createFormT();
-            return ['form' => $form->createView(), 'tasks' => $tasks, 'comments' => $comments, 'counters' => $counters, 'doneFilter' => $doneFilter];
+            return ['form' => $form->createView(), 'tasks' => $tasks, 'comments' => $comments, 'counters' => $counters, 'doneFilter' => $doneFilter, 'edit' => $edit];
         } else return $this->redirect("/login");
     }
 

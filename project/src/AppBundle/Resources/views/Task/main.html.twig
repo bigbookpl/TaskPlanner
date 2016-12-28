@@ -49,12 +49,17 @@
     <div class="row">
         <div class="col-md-4"></div>
         <div class="col-md-8">
-            <label><input type="checkbox" id="doneFilter" checked="checked">Show only undone</label>
+            <form method="post" id="doneFilter"><label><input type="checkbox" name="doneFilterChecked"
+                    {% if doneFilter %}
+                    checked="checked"
+                    {% endif %}
+                    >Show only undone</label></form>
         </div>
     </div>
     {% for task in tasks %}
         {% if task.isDone and doneFilter %}
         {% else %}
+            {%  %}
         <div class="row">
             <div class="col-md-4"></div>
             <div class="tasks" id="{{ task.id }}">
@@ -116,7 +121,7 @@
                 </div>
 
 
-                <div class="col-md-1 buttonsTP {{ task.id }}" data-content="{{ task.id }}"><a href="/setDone/{{ task.id }}"><img  class="doneBtn" src="/doneS.png"></a><img class="delBtn" src="/trashS.png"><img class="editBtn" src="/editS.png">
+                <div class="col-md-1 buttonsTP {{ task.id }}" data-content="{{ task.id }}"><a href="/setDone/{{ task.id }}"><img  class="doneBtn" src="/doneS.png"></a><img class="delBtn" src="/trashS.png"><a href="/?edit={{ task.id }}"><img class="editBtn" src="/editS.png"></a>
                 </div>
             </div>
         </div>
