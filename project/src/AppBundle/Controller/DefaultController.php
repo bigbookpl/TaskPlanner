@@ -23,6 +23,47 @@ use Symfony\Component\HttpFoundation\Response;
 
 class DefaultController extends Controller
 {
+
+    public function createFormT()
+    {
+        $task = new Task();
+        $form = $this->createFormBuilder($task)
+            ->setAction($this->generateurl('added'))
+            ->add('name', TextType::class)
+            ->add('description', TextareaType::class)
+            ->add('term', DateTimeType::class)
+            ->add('priority', NumberType::class)
+            ->add('category', EntityType::class, ['class' => 'AppBundle:Category', 'choice_label' => 'name', 'query_builder' =>
+                function (EntityRepository $er) {
+                    return $er->createQueryBuilder('c')
+                        ->where('c.user = :user')
+                        ->setParameter('user', $this->getUser());
+                }])
+            ->add('Add', 'submit')
+            ->getForm();
+        return $form;
+    }
+
+    public function createEditForm($taskId)
+    {
+        $task = $this->getDoctrine()->getRepository('AppBundle:Task')->findOneById($taskId);
+        $editForm = $this->createFormBuilder($task)
+            ->setAction('/#' . $taskId)
+            ->add('name', TextType::class, ['data' => $task->getName()])
+            ->add('description', TextareaType::class, ['data' => $task->getDescription()])
+            ->add('term', DateTimeType::class, ['data' => $task->getTerm()])
+            ->add('priority', NumberType::class, ['data' => $task->getPriority()])
+            ->add('category', EntityType::class, ['class' => 'AppBundle:Category', 'choice_label' => 'name', 'query_builder' =>
+                function (EntityRepository $er) {
+                    return $er->createQueryBuilder('c')
+                        ->where('c.user = :user')
+                        ->setParameter('user', $this->getUser());
+                }])
+            ->add('Edit', 'submit')
+            ->getForm();
+        return $editForm;
+    }
+
     /**
      * @Route("/add_comment/{taskId}", name="add_comment")
      */
@@ -55,27 +96,6 @@ class DefaultController extends Controller
         } else return $this->redirect("/login");
     }
 
-
-    public function createFormT()
-    {
-        $task = new Task();
-        $form = $this->createFormBuilder($task)
-            ->setAction($this->generateurl('added'))
-            ->add('name', TextType::class)
-            ->add('description', TextareaType::class)
-            ->add('term', DateTimeType::class)
-            ->add('priority', NumberType::class)
-            ->add('category', EntityType::class, ['class' => 'AppBundle:Category', 'choice_label' => 'name', 'query_builder' =>
-                function (EntityRepository $er) {
-                    return $er->createQueryBuilder('c')
-                        ->where('c.user = :user')
-                        ->setParameter('user', $this->getUser());
-                }])
-            ->add('Dodaj', 'submit')
-            ->getForm();
-        return $form;
-    }
-
     /**
      * @Route("/", name="main")
      * @Template("AppBundle:Task:main.html.twig")
@@ -84,6 +104,7 @@ class DefaultController extends Controller
     public function mainAction(Request $req)
     {
         $doneFilter = false;
+        $edit = false;
         if ($this->getUser()) {
             if ($req->getMethod() == 'POST') {
                 if ('on' == $req->get('doneFilterChecked'))
@@ -105,6 +126,17 @@ class DefaultController extends Controller
                 $counters[$currOffset]++;
             }
             $form = $this->createFormT();
+            if ($edited) {
+                $editForm = $this->createEditForm($edited);
+                $editForm->handleRequest($req);
+                if ($editForm->isSubmitted()) {
+                    $task = $repoTask->find($edited);
+                    $task = $form->getData();
+                    $em = $this->getDoctrine()->getManager();
+                    $em->persist($task);
+                    $em->flush();
+                }
+            }
             return ['form' => $form->createView(), 'tasks' => $tasks, 'comments' => $comments, 'counters' => $counters, 'doneFilter' => $doneFilter, 'edit' => $edit];
         } else return $this->redirect("/login");
     }
@@ -193,4 +225,22 @@ class DefaultController extends Controller
             return $this->redirect("/#" . $taskId);
         } else return $this->redirect("/login");
     }
+
+    /**
+     * @Route("/editTask/{taskId}")
+     */
+
+    public function editTaskAction($taskId)
+    {
+        if ($this->getUser()) {
+            $editForm = $this->createEditForm($taskId);
+            return $this->render(
+                'AppBundle:Task:editTask.html.twig',
+                array('editForm' => $editForm->createView())
+            );
+
+        } else return $this->redirect("/login");
+    }
+
+
 }

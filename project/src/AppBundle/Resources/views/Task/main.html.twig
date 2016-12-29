@@ -14,7 +14,7 @@
 </head>
 <body>
 {% block body %}
-<div class="container-fluid">
+    <div class="container-fluid">
     <div class="row">
         <div class="col-md-12"><h2>Task Planner</h2></div>
     </div>
@@ -50,87 +50,105 @@
         <div class="col-md-4"></div>
         <div class="col-md-8">
             <form method="post" id="doneFilter"><label><input type="checkbox" name="doneFilterChecked"
-                    {% if doneFilter %}
-                    checked="checked"
-                    {% endif %}
+                            {% if doneFilter %}
+                                checked="checked"
+                            {% endif %}
                     >Show only undone</label></form>
         </div>
     </div>
     {% for task in tasks %}
         {% if task.isDone and doneFilter %}
         {% else %}
-            {%  %}
-        <div class="row">
+            <div class="row">
             <div class="col-md-4"></div>
-            <div class="tasks" id="{{ task.id }}">
-                <div class="col-md-4">
+        <div class="tasks" id="{{ task.id }}">
+            <div class="col-md-4">
+            {% if task.id == edit %}
+                {{ render(controller(
+                'AppBundle:Default:editTask',
+                { 'taskId': task.id }
+                )) }}
+                </div>
+                <div class="col-md-1 buttonsTP {{ task.id }}" data-content="{{ task.id }}"><a
+                            href="/setDone/{{ task.id }}"><img class="doneBtn" src="/doneS.png"></a><img
+                            class="delBtn" src="/trashS.png"><a href="/?edit={{ task.id }}"><img
+                                class="editBtn" src="/editS.png"></a>
+                </div>
+                </div>
+                </div>
+            {% else %}
 
-                    <table>
 
-                        <a name="{{ task.id }}"></a>
-                        <tr>
-                            <th><label> Name:</label></th>
-                            <td>{{ task.name }}</td>
-                        </tr>
-                        <tr>
-                            <th><label> Description:</label></th>
-                            <td> {{ task.description }}</td>
-                        </tr>
-                        <br>
-                        <tr>
-                            <th><label> Priority:</label></th>
-                            <td>{{ task.priority }}</td>
-                        </tr>
-                        <br>
-                        <tr>
-                            <th><label> Category:</label></th>
-                            <td>{{ task.category }}</td>
-                        </tr>
-                        <br>
-                        <tr>
-                            <th><label> Term:</label></th>
-                            <td>{{ task.term | date }}</td>
-                        </tr>
-                        <tr>
-                            <th><label> Done:</label></th>
-                            <td>{% if task.isDone %}
-                            Yes
+
+                <table>
+
+                    <a name="{{ task.id }}"></a>
+                    <tr>
+                        <th><label> Name:</label></th>
+                        <td>{{ task.name }}</td>
+                    </tr>
+                    <tr>
+                        <th><label> Description:</label></th>
+                        <td> {{ task.description }}</td>
+                    </tr>
+                    <br>
+                    <tr>
+                        <th><label> Priority:</label></th>
+                        <td>{{ task.priority }}</td>
+                    </tr>
+                    <br>
+                    <tr>
+                        <th><label> Category:</label></th>
+                        <td>{{ task.category }}</td>
+                    </tr>
+                    <br>
+                    <tr>
+                        <th><label> Term:</label></th>
+                        <td>{{ task.term | date }}</td>
+                    </tr>
+                    <tr>
+                        <th><label> Done:</label></th>
+                        <td>{% if task.isDone %}
+                                Yes
                             {% else %}
-                            No
+                                No
                             {% endif %}</td>
-                        </tr>
-                        <tr>
-                            <td><a class="showComm">Show comments (
-                                    {% if counters[task.id] is defined  %}
-                                        {{ counters [task.id]}}
-                                {% else %}
-                                   0
+                    </tr>
+                    <tr>
+                        <td><a class="showComm">Show comments (
+                                {% if counters[task.id] is defined %}
+                                {{ counters [task.id] }}
+                            {% else %}
+                                0
                                 {% endif %})</a></td>
-                        </tr>
-                    </table>
-                    <div class="comments">
-                        {% include 'AppBundle:Task:comments.html.twig' with {'comments': comments, 'taskId': task.id} %}
-                    </div>
-                        {{ render(controller(
-                        'AppBundle:Default:addComment',
-                        { 'taskId': task.id }
-                        )) }}
-
+                    </tr>
+                </table>
+                <div class="comments">
+                    {% include 'AppBundle:Task:comments.html.twig' with {'comments': comments, 'taskId': task.id} %}
+                </div>
+                {{ render(controller(
+                'AppBundle:Default:addComment',
+                { 'taskId': task.id }
+                )) }}
 
 
                 </div>
 
 
-                <div class="col-md-1 buttonsTP {{ task.id }}" data-content="{{ task.id }}"><a href="/setDone/{{ task.id }}"><img  class="doneBtn" src="/doneS.png"></a><img class="delBtn" src="/trashS.png"><a href="/?edit={{ task.id }}"><img class="editBtn" src="/editS.png"></a>
+                <div class="col-md-1 buttonsTP {{ task.id }}" data-content="{{ task.id }}"><a
+                            href="/setDone/{{ task.id }}"><img class="doneBtn" src="/doneS.png"></a><img
+                            class="delBtn" src="/trashS.png"><a href="/?edit={{ task.id }}#{{ task.id }}"><img
+                                class="editBtn" src="/editS.png"></a>
                 </div>
-            </div>
-        </div>
-    {% endif %}
+                </div>
+                </div>
+            {% endif %}
+        {% endif %}
     {% endfor %}
 
 
 
-    {% endblock %}
+{% endblock %}
 
 </div>
 </body>
