@@ -116,6 +116,14 @@ class DefaultController extends Controller
             }
             $repoTask = $this->getDoctrine()->getRepository('AppBundle:Task');
             $tasks = $repoTask->findByUser($this->getUser(), ['term' => 'DESC']);
+            $form = $this->createFormT();
+            return ['form' => $form->createView(), 'tasks' => $tasks, 'doneFilter' => $doneFilter, 'edit' => $edit];
+        } else return $this->redirect("/login");
+    }
+
+    public function taskAction($task)
+    {
+        if ($this->getUser()) {
             $repoComm = $this->getDoctrine()->getRepository('AppBundle:Comment');
             $comments = $repoComm->findByUser($this->getUser(), ['date' => 'DESC']);
             $counters = [];
@@ -126,8 +134,7 @@ class DefaultController extends Controller
                 }
                 $counters[$currOffset]++;
             }
-            $form = $this->createFormT();
-            return ['form' => $form->createView(), 'tasks' => $tasks, 'comments' => $comments, 'counters' => $counters, 'doneFilter' => $doneFilter, 'edit' => $edit];
+            return $this->render('AppBundle:Task:task.html.twig', ['task' => $task, 'comments' => $comments, 'counters' => $counters]);
         } else return $this->redirect("/login");
     }
 

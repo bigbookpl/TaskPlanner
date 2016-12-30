@@ -68,81 +68,22 @@
                 'AppBundle:Default:editTask',
                 { 'taskId': task.id }
                 )) }}
-                </div>
-                <div class="col-md-1 buttonsTP {{ task.id }}" data-content="{{ task.id }}"><a
-                            href="/setDone/{{ task.id }}"><img class="doneBtn" src="/doneS.png"></a><img
-                            class="delBtn" src="/trashS.png"><a href="/?edit={{ task.id }}"><img
-                                class="editBtn" src="/editS.png"></a>
-                </div>
-                </div>
-                </div>
             {% else %}
-
-
-
-                <table>
-
-                    <a name="{{ task.id }}"></a>
-                    <tr>
-                        <th><label> Name:</label></th>
-                        <td>{{ task.name }}</td>
-                    </tr>
-                    <tr>
-                        <th><label> Description:</label></th>
-                        <td> {{ task.description }}</td>
-                    </tr>
-                    <br>
-                    <tr>
-                        <th><label> Priority:</label></th>
-                        <td>{{ task.priority }}</td>
-                    </tr>
-                    <br>
-                    <tr>
-                        <th><label> Category:</label></th>
-                        <td>{{ task.category }}</td>
-                    </tr>
-                    <br>
-                    <tr>
-                        <th><label> Term:</label></th>
-                        <td>{{ task.term | date }}</td>
-                    </tr>
-                    <tr>
-                        <th><label> Done:</label></th>
-                        <td>{% if task.isDone %}
-                                Yes
-                            {% else %}
-                                No
-                            {% endif %}</td>
-                    </tr>
-                    <tr>
-                        <td><a class="showComm">Show comments (
-                                {% if counters[task.id] is defined %}
-                                {{ counters [task.id] }}
-                            {% else %}
-                                0
-                                {% endif %})</a></td>
-                    </tr>
-                </table>
-                <div class="comments">
-                    {% include 'AppBundle:Task:comments.html.twig' with {'comments': comments, 'taskId': task.id} %}
-                </div>
                 {{ render(controller(
-                'AppBundle:Default:addComment',
-                { 'taskId': task.id }
+                'AppBundle:Default:task',
+                { 'task': task }
                 )) }}
-
-
-                </div>
-
-
-                <div class="col-md-1 buttonsTP {{ task.id }}" data-content="{{ task.id }}"><a
-                            href="/setDone/{{ task.id }}"><img class="doneBtn" src="/doneS.png"></a><img
-                            class="delBtn" src="/trashS.png"><a href="/?edit={{ task.id }}#{{ task.id }}"><img
-                                class="editBtn" src="/editS.png"></a>
-                </div>
-                </div>
-                </div>
             {% endif %}
+            </div>
+
+
+            <div class="col-md-1 buttonsTP {{ task.id }}" data-content="{{ task.id }}"><a
+                        href="/setDone/{{ task.id }}"><img class="doneBtn" src="/doneS.png"></a><img
+                        class="delBtn" src="/trashS.png"><a href="/?edit={{ task.id }}#{{ task.id }}"><img
+                            class="editBtn" src="/editS.png"></a>
+            </div>
+            </div>
+            </div>
         {% endif %}
     {% endfor %}
 
