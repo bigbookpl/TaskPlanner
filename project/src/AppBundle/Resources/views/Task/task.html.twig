@@ -1,12 +1,3 @@
-{% if editForm is defined %}
-
-{{ form_start(editForm) }}
-{{ form_widget(editForm) }}
-{{ form_errors(editForm) }}
-{{ form_end(editForm) }}
-
-{% else %}
-
 <table>
 
     <a name="{{ task.id }}"></a>

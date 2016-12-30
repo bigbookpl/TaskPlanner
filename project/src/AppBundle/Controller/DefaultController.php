@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\AppBundle;
 use AppBundle\Entity\Comment;
 use AppBundle\Entity\Task;
 use AppBundle\Entity\Category;
@@ -48,7 +49,7 @@ class DefaultController extends Controller
     {
         $task = $this->getDoctrine()->getRepository('AppBundle:Task')->findOneById($taskId);
         $editForm = $this->createFormBuilder($task)
-            ->setAction('/#' . $taskId)
+            ->setAction('/edited/' . $taskId)
             ->add('name', TextType::class, ['data' => $task->getName()])
             ->add('description', TextareaType::class, ['data' => $task->getDescription()])
             ->add('term', DateTimeType::class, ['data' => $task->getTerm()])
@@ -126,17 +127,6 @@ class DefaultController extends Controller
                 $counters[$currOffset]++;
             }
             $form = $this->createFormT();
-            if ($edited) {
-                $editForm = $this->createEditForm($edited);
-                $editForm->handleRequest($req);
-                if ($editForm->isSubmitted()) {
-                    $task = $repoTask->find($edited);
-                    $task = $form->getData();
-                    $em = $this->getDoctrine()->getManager();
-                    $em->persist($task);
-                    $em->flush();
-                }
-            }
             return ['form' => $form->createView(), 'tasks' => $tasks, 'comments' => $comments, 'counters' => $counters, 'doneFilter' => $doneFilter, 'edit' => $edit];
         } else return $this->redirect("/login");
     }
@@ -233,12 +223,37 @@ class DefaultController extends Controller
     public function editTaskAction($taskId)
     {
         if ($this->getUser()) {
-            $editForm = $this->createEditForm($taskId);
-            return $this->render(
-                'AppBundle:Task:editTask.html.twig',
-                array('editForm' => $editForm->createView())
-            );
+            $task = $this->getDoctrine()->getRepository('AppBundle:Task')->find($taskId);
+            if ($task->getIsDone()) {
+                return $this->render(
+                    'AppBundle:Task:editTask.html.twig', ['task' => $task]);
+            } else {
+                $editForm = $this->createEditForm($taskId);
+                return $this->render(
+                    'AppBundle:Task:editTask.html.twig',
+                    ['editForm' => $editForm->createView()]
+                );
+            }
+        } else return $this->redirect("/login");
+    }
 
+    /**
+     * @Route("/edited/{taskId}")
+     */
+
+    public function editedTaskAction(Request $req, $taskId)
+    {
+        if ($this->getUser()) {
+            $editForm = $this->createEditForm($taskId);
+            $editForm->handleRequest($req);
+            if ($editForm->isSubmitted()) {
+                $task = $this->getDoctrine()->getRepository('AppBundle:Task')->find($taskId);
+                $task = $editForm->getData();
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($task);
+                $em->flush();
+                return $this->redirect("/#" . $taskId);
+            }
         } else return $this->redirect("/login");
     }
 
