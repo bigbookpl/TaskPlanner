@@ -2,13 +2,15 @@
 <html>
 <head>
     <meta charset="UTF-8"/>
-    <title>{% block title %}Welcome!{% endblock %}</title>
+    <title>{% block title %}TaskPlanner{% endblock %}</title>
     {% block stylesheets %}
        {% endblock %}
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}"/>
 </head>
 <body>
-{% block body %}{% endblock %}
+{% block body %}<div class="page-header">
+    <h1>Example page header <small>Subtext for header</small></h1>
+</div>{% endblock %}
 {% block javascripts %}{% endblock %}
 </body>
 </html>
