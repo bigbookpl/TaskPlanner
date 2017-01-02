@@ -116,8 +116,9 @@ class DefaultController extends Controller
             }
             $repoTask = $this->getDoctrine()->getRepository('AppBundle:Task');
             $tasks = $repoTask->findByUser($this->getUser(), ['term' => 'DESC']);
+            $todayTasks = $repoTask->findTodayTasks();
             $form = $this->createFormT();
-            return ['form' => $form->createView(), 'tasks' => $tasks, 'doneFilter' => $doneFilter, 'edit' => $edit];
+            return ['form' => $form->createView(), 'tasks' => $tasks, 'doneFilter' => $doneFilter, 'edit' => $edit, 'todayTasks' => $todayTasks];
         } else return $this->redirect("/login");
     }
 
