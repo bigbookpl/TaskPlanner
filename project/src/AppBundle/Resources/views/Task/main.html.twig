@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,8 +9,8 @@
     {% endblock %}
     {% block javascripts %}
     {% endblock %}
-    {#<script src="{{ asset('https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.6.0/fullcalendar.min.js') }}"></script>#}
-    {#<link rel='stylesheet' href="{{ asset('https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.6.0/fullcalendar.css') }}" />#}
+    <script src="{{ asset('bundles/scdatetimepicker/js/bootstrap-datetimepicker.js') }}"></script>
+    <link rel='stylesheet' href="{{ asset('bundles/scdatetimepicker/css/datetimepicker.css') }}" />
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}"/>
 </head>
 <body>
@@ -21,7 +21,9 @@
     <div class="row">
         <div class="col-md-12"><h2>Task Planner</h2></div>
     </div>
+        <hr><br><br>
     <div class="row">
+
         <div class="col-md-3 fixed">
             {{ form_start(form) }}
             {{ form_label(form.name) }} <br>
@@ -29,16 +31,20 @@
             {{ form_label(form.description) }} <br>
             {{ form_widget(form.description) }} <br>
             {{ form_label(form.term) }}
-            {{ form_widget(form.term) }}
+            <div class='input-group date datetimepicker'>
+            {{ form_widget(form.term, {'attr': {'class': 'form-control input-inline', 'type': 'datetime'}}) }}
+                <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-calendar"></span>
+                                </span>
+            </div>
             {{ form_label(form.priority) }}<br>
             {{ form_widget(form.priority) }}<br>
             {{ form_label(form.category) }} <br>
             {{ form_widget(form.category) }}<br>
             {{ form_end(form) }}
-
-        </div>
+            </div>
         <div class="col-md-1"></div>
-        <div class="col-md-5">
+        <div class="col-md-3">
 
             {#kalendarz/kółka#}
             <h4>Today: </h4>
@@ -47,9 +53,16 @@
                 <li> {{ task.name }} </li>
             {% endfor %}
             </ol>
-        <label>Choose date: <input id="datepicker"></label>
-        </div>
-
+            <form method="post" action="#">
+                <label>Choose date: </label>
+                <div class='input-group date datepicker'><input class="form-control input-inline" type="date" name="chosenDay">
+                    <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                </div>
+                <button type="submit">Show</button>
+            </form></div>
+        <div class="col-md-2"></div>
         <div class="col-lg-3">
             <h4>Categories:</h4>
             <br>
@@ -67,12 +80,13 @@
         <div class="col-md-1"></div>
         <div class="col-md-5">
             <h3>Task List:</h3>
+            <fieldset class="form-group">
             <div class="input-group">     <form method="post" id="doneFilter"><label><input type="checkbox" name="doneFilterChecked"
                             {% if doneFilter %}
                                 checked="checked"
                             {% endif %}
                         >Show only undone</label></form></div>
-        </div>
+        </div></fieldset>
         <div class="col-lg-3">
 
     </div>

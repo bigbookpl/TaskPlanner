@@ -1,8 +1,21 @@
 {% if editForm is defined %}
 
     {{ form_start(editForm) }}
-    {{ form_widget(editForm) }}
-    {{ form_errors(editForm) }}
+    {{ form_label(editForm.name) }} <br>
+    {{ form_widget(editForm.name) }} <br>
+    {{ form_label(editForm.description) }} <br>
+    {{ form_widget(editForm.description) }} <br>
+    {{ form_label(editForm.term) }}
+    <div class='input-group date datetimepicker'>
+        {{ form_widget(editForm.term, {'attr': {'class': 'form-control input-inline'}}) }}
+        <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-calendar"></span>
+                                </span>
+    </div>
+    {{ form_label(editForm.priority) }}<br>
+    {{ form_widget(editForm.priority) }}<br>
+    {{ form_label(editForm.category) }} <br>
+    {{ form_widget(editForm.category) }}<br>
     {{ form_end(editForm) }}
 
 {% else %}

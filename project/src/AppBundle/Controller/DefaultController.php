@@ -32,7 +32,7 @@ class DefaultController extends Controller
             ->setAction($this->generateurl('added'))
             ->add('name', TextType::class)
             ->add('description', TextareaType::class)
-            ->add('term', DateTimeType::class)
+            ->add('term', 'collot_datetime', ['pickerOptions' => array('format' => 'yyyy-mm-dd hh:ii p')])
             ->add('priority', NumberType::class)
             ->add('category', EntityType::class, ['class' => 'AppBundle:Category', 'choice_label' => 'name', 'query_builder' =>
                 function (EntityRepository $er) {
@@ -52,7 +52,7 @@ class DefaultController extends Controller
             ->setAction('/edited/' . $taskId)
             ->add('name', TextType::class, ['data' => $task->getName()])
             ->add('description', TextareaType::class, ['data' => $task->getDescription()])
-            ->add('term', DateTimeType::class, ['data' => $task->getTerm()])
+            ->add('term', 'collot_datetime', ['data' => $task->getTerm()])
             ->add('priority', NumberType::class, ['data' => $task->getPriority()])
             ->add('category', EntityType::class, ['class' => 'AppBundle:Category', 'choice_label' => 'name', 'query_builder' =>
                 function (EntityRepository $er) {
@@ -68,6 +68,7 @@ class DefaultController extends Controller
     /**
      * @Route("/add_comment/{taskId}", name="add_comment")
      */
+
     public function addCommentAction(Request $req, $taskId)
     {
         if ($this->getUser()) {
@@ -110,22 +111,26 @@ class DefaultController extends Controller
             if ($req->getMethod() == 'POST') {
                 if ('on' == $req->get('doneFilterChecked'))
                     $doneFilter = true;
+                if (!is_null($req->get('chosenDay'))) {
+                    $chosenDay = $req->get('chosenDay');
+                }
             }
             if ($req->getMethod() == 'GET') {
-                if($req->get('edit')) {
+                if ($req->get('edit')) {
                     $edit = $req->get('edit');
                 }
-                if($req->get('cat')) {
+                if ($req->get('cat')) {
                     $categoryChosen = $req->get('cat');
                 }
             }
             $repoTask = $this->getDoctrine()->getRepository('AppBundle:Task');
             $repoCategory = $this->getDoctrine()->getRepository('AppBundle:Category');
 
-            if(isset($categoryChosen)) {
+            if (isset($categoryChosen)) {
                 $tasks = $repoTask->findByCategoryForUser($repoCategory->findOneByName($categoryChosen)->getId(), $this->getUser(), ['term' => 'DESC']);
-            }
-            else {
+            } elseif (isset($chosenDay)) {
+                $tasks = $repoTask->findByDay($chosenDay);
+            } else {
                 $tasks = $repoTask->findByUser($this->getUser(), ['term' => 'DESC']);
             }
             $todayTasks = $repoTask->findTodayTasks();
