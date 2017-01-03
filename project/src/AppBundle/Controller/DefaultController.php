@@ -112,13 +112,26 @@ class DefaultController extends Controller
                     $doneFilter = true;
             }
             if ($req->getMethod() == 'GET') {
-                $edit = $req->get('edit');
+                if($req->get('edit')) {
+                    $edit = $req->get('edit');
+                }
+                if($req->get('cat')) {
+                    $categoryChosen = $req->get('cat');
+                }
             }
             $repoTask = $this->getDoctrine()->getRepository('AppBundle:Task');
-            $tasks = $repoTask->findByUser($this->getUser(), ['term' => 'DESC']);
+            $repoCategory = $this->getDoctrine()->getRepository('AppBundle:Category');
+
+            if(isset($categoryChosen)) {
+                $tasks = $repoTask->findByCategoryForUser($repoCategory->findOneByName($categoryChosen)->getId(), $this->getUser(), ['term' => 'DESC']);
+            }
+            else {
+                $tasks = $repoTask->findByUser($this->getUser(), ['term' => 'DESC']);
+            }
             $todayTasks = $repoTask->findTodayTasks();
             $form = $this->createFormT();
-            return ['form' => $form->createView(), 'tasks' => $tasks, 'doneFilter' => $doneFilter, 'edit' => $edit, 'todayTasks' => $todayTasks];
+            $categories = $repoCategory->findAll();
+            return ['form' => $form->createView(), 'tasks' => $tasks, 'doneFilter' => $doneFilter, 'edit' => $edit, 'todayTasks' => $todayTasks, 'categories' => $categories];
         } else return $this->redirect("/login");
     }
 
