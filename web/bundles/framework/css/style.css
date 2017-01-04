@@ -1,0 +1,24 @@
+.buttonsTP {
+    position: relative;
+    top: 60px;
+    height: 200px;
+}
+
+h2 {
+    text-align: center;
+}
+
+.customError {
+    color:red;
+    font-weight: bold;
+}
+
+textarea {
+    resize: none;
+    height: 150px;
+}
+
+main {
+    padding-top: 3rem;
+    padding-bottom: 2rem;
+}
